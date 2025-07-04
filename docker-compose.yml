@@ -1,0 +1,13 @@
+
+services:
+  frontend:
+    build:
+      context: ./Frontend
+    ports:
+      - "5000:80"
+
+  backend:
+    build:
+      context: ./Backend
+    ports:
+      - "5001:80"
