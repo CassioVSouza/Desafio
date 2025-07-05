@@ -7,5 +7,7 @@ namespace Backend.Servicos.Interfaces
         Task<bool> AdicionarUsuarioAsync(Usuario usuario);
         Task<bool> UsuarioNaoExisteAsync(string usuario);
         Usuario ValidarInformacoes(string usuarioNome, string senha);
+        string? RetornarTokenDeAcessoAsync(string usuario);
+        Task<bool> ValidarUsuarioAsync(string usuario, string senha);
     }
 }
