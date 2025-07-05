@@ -4,10 +4,10 @@ namespace Backend.Repositorio.Interfaces
 {
     public interface IAmostraRepositorio
     {
-        Task<bool> AdicionarAmostra(Amostra amostra);
-        Task<bool> DeletarAmostra(int codigo);
-        Task<bool> AtualizarAmostra(Amostra amostra);
-        Task<List<Amostra>> ConsultarAmostras();
-        Task<List<Amostra>> ConsultarAmostrasFiltradas(DateTime Data, string Status);
+        Task<bool> AdicionarAmostraAsync(Amostra amostra);
+        Task<bool> DeletarAmostraAsync(int codigo);
+        Task<bool> AtualizarAmostraAsync(Amostra amostra);
+        Task<List<Amostra>> ConsultarAmostrasAsync();
+        Task<List<Amostra>> ConsultarAmostrasFiltradasAsync(DateTime Data, string Status);
     }
 }

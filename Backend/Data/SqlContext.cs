@@ -10,5 +10,6 @@ namespace Backend.Data
         }
 
         public DbSet<Amostra> Amostras { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
     }
 }

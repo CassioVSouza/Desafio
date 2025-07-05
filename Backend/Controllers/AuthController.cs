@@ -1,0 +1,57 @@
+﻿using Backend.Repositorio.Principal;
+using Backend.Servicos.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+
+namespace Backend.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AuthController : ControllerBase
+    {
+
+        private readonly IAuthServico _authServico;
+        private readonly ILogServico _logServico;
+
+        public AuthController(IAuthServico authServico, ILogServico logServico)
+        {
+            _authServico = authServico;
+            _logServico = logServico;
+        }
+
+        [HttpPost]
+        [Route("/AdicionarUsuario")]
+        public async Task<IActionResult> AdicionarUsuario()
+        {
+            try
+            {
+                string usuario = "Usuario"; //dados do usuario hardcodado para simplificar os testes
+                string senha = "HpmdXS+KAoYK/zo/od4AIg=="; // senha criptografada usando PBKDF2
+
+                var respostaUsuarioNaoEncontrado = await _authServico.UsuarioNaoExisteAsync(usuario);
+
+                if (respostaUsuarioNaoEncontrado == false)
+                    return BadRequest("Usuário Já existe!");
+
+                var usuarioModel = _authServico.ValidarInformacoes(usuario, senha);
+
+                if (usuarioModel != null)
+                {
+                    var respostaUsuarioAdicionado = await _authServico.AdicionarUsuarioAsync(usuarioModel);
+
+                    if (respostaUsuarioAdicionado)
+                        return Ok();
+
+                    return StatusCode(500, "Ocorreu um erro, tente novamente mais tarde!");
+                }
+                return BadRequest("Informações Inválidas!");
+
+            }
+            catch (Exception ex)
+            {
+                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(AdicionarUsuario)}: {ex.Message}");
+                return StatusCode(500, "Ocorreu um erro, tente novamente mais tarde!");
+            }
+        }
+    }
+}

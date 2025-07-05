@@ -17,7 +17,7 @@ namespace Backend.Repositorio.Principal
             _logServico = logServico;
         }
 
-        public async Task<bool> AdicionarAmostra(Amostra amostra)
+        public async Task<bool> AdicionarAmostraAsync(Amostra amostra)
         {
             try
             {
@@ -35,12 +35,12 @@ namespace Backend.Repositorio.Principal
                 }
             }catch(Exception ex)
             {
-                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(AdicionarAmostra)}: {ex.Message}");
+                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(AdicionarAmostraAsync)}: {ex.Message}");
                 return false;
             }
         }
 
-        public async Task<bool> DeletarAmostra(int codigo)
+        public async Task<bool> DeletarAmostraAsync(int codigo)
         {
             try
             {
@@ -65,12 +65,12 @@ namespace Backend.Repositorio.Principal
             }
             catch (Exception ex)
             {
-                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(DeletarAmostra)}: {ex.Message}");
+                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(DeletarAmostraAsync)}: {ex.Message}");
                 return false;
             }
         }
 
-        public async Task<bool> AtualizarAmostra(Amostra amostra)
+        public async Task<bool> AtualizarAmostraAsync(Amostra amostra)
         {
             try
             {
@@ -89,12 +89,12 @@ namespace Backend.Repositorio.Principal
             }
             catch (Exception ex)
             {
-                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(AtualizarAmostra)}: {ex.Message}");
+                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(AtualizarAmostraAsync)}: {ex.Message}");
                 return false;
             }
         }
 
-        public async Task<List<Amostra>> ConsultarAmostras()
+        public async Task<List<Amostra>> ConsultarAmostrasAsync()
         {
             try
             {
@@ -107,12 +107,12 @@ namespace Backend.Repositorio.Principal
             }
             catch (Exception ex)
             {
-                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(ConsultarAmostras)}: {ex.Message}");
+                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(ConsultarAmostrasAsync)}: {ex.Message}");
                 return new List<Amostra>();
             }
         }
 
-        public async Task<List<Amostra>> ConsultarAmostrasFiltradas(DateTime Data, string Status)
+        public async Task<List<Amostra>> ConsultarAmostrasFiltradasAsync(DateTime Data, string Status)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace Backend.Repositorio.Principal
             }
             catch (Exception ex)
             {
-                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(ConsultarAmostrasFiltradas)}: {ex.Message}");
+                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(ConsultarAmostrasFiltradasAsync)}: {ex.Message}");
                 return new List<Amostra>();
             }
         }

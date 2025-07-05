@@ -1,10 +1,14 @@
 using Backend.Data;
+using Backend.Models;
 using Backend.Repositorio.Interfaces;
 using Backend.Repositorio.Principal;
 using Backend.Servicos.Interfaces;
 using Backend.Servicos.Principal;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +16,34 @@ builder.WebHost.UseUrls("http://0.0.0.0:80"); //Utilize essa URL para ser possív
 
 builder.Services.AddScoped<ILogServico, LogServico>();
 builder.Services.AddScoped<IAmostraRepositorio, AmostraRepositorio>();
+builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+builder.Services.AddScoped<IAuthServico, AuthServico>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<JwtConfigs>(builder.Configuration.GetSection("JwtSettings"));
+var jwtConfigs = builder.Configuration.GetSection("JwtSettings").Get<JwtConfigs>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtConfigs!.Issuer,
+        ValidAudience = jwtConfigs.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigs.Key))
+    };
+});
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -32,6 +59,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
