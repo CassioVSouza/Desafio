@@ -31,7 +31,7 @@ namespace Backend.Controllers
                 var amostraFiltrada = _amostraServico.ValidarInformacoes(amostra);
 
                 if (amostraFiltrada == null)
-                    return BadRequest(new
+                    return BadRequest(new ErroAPIDTO()
                     {
                         codigoErro = (int)ERespostasAPI.InfosInvalidas,
                         Motivo = "Os dados não passaram na validação"
@@ -60,7 +60,7 @@ namespace Backend.Controllers
                 var amostraFiltrada = _amostraServico.ValidarInformacoes(amostra);
 
                 if (amostraFiltrada == null)
-                    return BadRequest(new
+                    return BadRequest(new ErroAPIDTO()
                     {
                         codigoErro = (int)ERespostasAPI.InfosInvalidas,
                         Motivo = "Os dados não passaram na validação"
@@ -89,7 +89,7 @@ namespace Backend.Controllers
                 var resposta = await _amostraServico.ExcluirAmostraAsync(codigo);
 
                 if (!resposta)
-                    return BadRequest(new
+                    return BadRequest(new ErroAPIDTO()
                     {
                         codigoErro = (int)ERespostasAPI.ErroServidor,
                         Motivo = "Ocorreu um erro ao tentar deletar a amostra"
@@ -130,7 +130,7 @@ namespace Backend.Controllers
                 var amostra = await _amostraServico.ConsultarAmostraPorCodigoAsync(codigo);
 
                 if (amostra == null)
-                    return BadRequest(new
+                    return BadRequest(new ErroAPIDTO()
                     {
                        codigoErro = (int)ERespostasAPI.NaoEncontrado,
                        Motivo = "Esse codigo nao corresponde a nenhuma amostra do banco de dados."

@@ -1,4 +1,5 @@
 ﻿using Backend.DTOs;
+using Backend.Enums;
 using Backend.Repositorio.Principal;
 using Backend.Servicos.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,11 @@ namespace Backend.Controllers
                 var respostaUsuarioNaoEncontrado = await _authServico.UsuarioNaoExisteAsync(usuario);
 
                 if (respostaUsuarioNaoEncontrado == false)
-                    return BadRequest("Usuário Já existe!");
+                    return BadRequest(new ErroAPIDTO()
+                    {
+                        codigoErro = (int)ERespostasAPI.InfosInvalidas,
+                        Motivo = "Usuário já existe!"
+                    });
 
                 var usuarioModel = _authServico.ValidarInformacoes(usuario, senha);
 
@@ -64,7 +69,11 @@ namespace Backend.Controllers
                 var respostaValidacao = await _authServico.ValidarUsuarioAsync(login.user, login.senha);
 
                 if (!respostaValidacao)
-                    return BadRequest("Senha ou usuário incorretos!");
+                    return BadRequest(new ErroAPIDTO()
+                    {
+                        codigoErro = (int)ERespostasAPI.InfosInvalidas,
+                        Motivo = "Usuário ou senha inválidos!"
+                    });
 
                 var tokenDeAcesso = _authServico.RetornarTokenDeAcessoAsync(login.user);
 

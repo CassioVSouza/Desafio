@@ -1,0 +1,70 @@
+﻿@page "/"
+@using Frontend.Servicos.Principal
+@inject ILoginServico loginServico
+@inject NavigationManager Navigation
+@inject ILogServico logServico
+
+@rendermode InteractiveServer
+
+<PageTitle>Login</PageTitle>
+
+@if(mensagemErro != null)
+{
+    <div>
+        @mensagemErro
+    </div>
+}
+
+<EditForm Model="@login" OnValidSubmit="FazerLoginAsync" >
+    <DataAnnotationsValidator/>
+
+    <div class="form-group">
+        <label class="form-label" id="Usuario">Usuário</label>
+        <InputText class="form-control" @bind-Value="login.user" type="text"/>
+        <ValidationMessage For="@(() => login.user)"/>
+    </div>
+    <div class="form-group">
+        <label class="form-label" id="Usuario">Senha</label>
+        <InputText class="form-control" @bind-Value="login.senha" type="text" />
+        <ValidationMessage For="@(() => login.senha)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-group btn-success">Entrar</button>
+    </div>
+</EditForm>
+
+@code {
+    public LoginModel login { get; set; } = new();
+    public string? mensagemErro { get; set; }
+
+    private async Task FazerLoginAsync()
+    {
+        mensagemErro = null;
+        try
+        {
+            var resposta = await loginServico.FazerLoginAsync(login);
+
+            if (resposta == ERespostaAPI.Ok)
+            {
+                Navigation.NavigateTo("/counter");
+                return;
+            }
+
+            if(resposta == ERespostaAPI.ErroServidor)
+            {
+                mensagemErro = "Ocorreu um erro, tente novamente mais tarde!";
+                return;
+            }
+
+            if(resposta == ERespostaAPI.InfosInvalidas)
+            {
+                mensagemErro = "Usuário ou senha estão inválidos!";
+                return;
+            }
+        }catch(Exception ex)
+        {
+            logServico.EnviarLog($"Erro na pagina {nameof(Login)}, função {nameof(FazerLoginAsync)}: {ex.Message}");
+            mensagemErro = "Ocorreu um erro, tente novamente mais tarde!";
+        }
+    }
+}
