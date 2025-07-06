@@ -28,7 +28,7 @@ namespace Backend.Repositorio.Principal
                 return usuarioEncontrado;
             }
             catch (Exception ex) {
-                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(ConsultarUsuarioAsync)}: {ex.Message}");
+                _logServico.EnviarLog($"Erro em {nameof(UsuarioRepositorio)}, função {nameof(ConsultarUsuarioAsync)}: {ex.Message}");
                 return null!;
             }
         }
@@ -49,7 +49,7 @@ namespace Backend.Repositorio.Principal
             }
             catch (Exception ex)
             {
-                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(AdicionarUsuarioAsync)}: {ex.Message}");
+                _logServico.EnviarLog($"Erro em {nameof(UsuarioRepositorio)}, função {nameof(AdicionarUsuarioAsync)}: {ex.Message}");
                 return false;
             }
         }

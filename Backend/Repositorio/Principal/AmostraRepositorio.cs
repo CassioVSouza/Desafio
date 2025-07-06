@@ -40,7 +40,7 @@ namespace Backend.Repositorio.Principal
             }
         }
 
-        public async Task<bool> DeletarAmostraAsync(int codigo)
+        public async Task<bool> DeletarAmostraAsync(string codigo)
         {
             try
             {
@@ -67,6 +67,25 @@ namespace Backend.Repositorio.Principal
             {
                 _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(DeletarAmostraAsync)}: {ex.Message}");
                 return false;
+            }
+        }
+
+        public async Task<Amostra?> ConsultarAmostraPorCodigoAsync(string codigo)
+        {
+            try
+            {
+                var amostra = await _sqlContext.Amostras.FindAsync(codigo);
+
+                if (amostra == null)
+                    return null;
+
+
+                return amostra;
+            }
+            catch (Exception ex)
+            {
+                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(ConsultarAmostraPorCodigoAsync)}: {ex.Message}");
+                return null;
             }
         }
 
@@ -98,7 +117,8 @@ namespace Backend.Repositorio.Principal
         {
             try
             {
-                var amostras = await _sqlContext.Amostras.ToListAsync();
+                var dateTimeDe30Dias = DateTime.UtcNow.AddDays(-30);
+                var amostras = await _sqlContext.Amostras.Where(o => o.DataRecebimento.Date >= dateTimeDe30Dias.Date).ToListAsync();
 
                 if (amostras == null)
                     amostras = new List<Amostra>();
@@ -112,11 +132,21 @@ namespace Backend.Repositorio.Principal
             }
         }
 
-        public async Task<List<Amostra>> ConsultarAmostrasFiltradasAsync(DateTime Data, string Status)
+        public async Task<List<Amostra>> ConsultarAmostrasFiltradasAsync(DateTime? data, string? status)
         {
             try
             {
-                var amostras = await _sqlContext.Amostras.Where(o => o.DataRecebimento.Date == Data.Date && o.Status == Status).ToListAsync();
+                var amostras = new List<Amostra>();
+
+                if (data == null && !string.IsNullOrEmpty(status))
+                {
+                    amostras = await _sqlContext.Amostras.Where(o => o.Status == status).ToListAsync();
+                }
+
+                if(string.IsNullOrEmpty(status) && data != null)
+                {
+                    amostras = await _sqlContext.Amostras.Where(o => o.DataRecebimento.Date == data.Value.Date).ToListAsync();
+                }
 
                 if(amostras == null)
                     amostras = new List<Amostra>();

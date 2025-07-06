@@ -50,14 +50,14 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(AdicionarUsuario)}: {ex.Message}");
+                _logServico.EnviarLog($"Erro em {nameof(AuthController)}, função {nameof(AdicionarUsuario)}: {ex.Message}");
                 return StatusCode(500, "Ocorreu um erro, tente novamente mais tarde!");
             }
         }
 
         [HttpPost]
         [Route("/Login")]
-        public async Task<IActionResult> Login([FromBody]LoginRequest login)
+        public async Task<IActionResult> Login([FromBody]UsuarioDTO login)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                _logServico.EnviarLog($"Erro em {nameof(AmostraRepositorio)}, função {nameof(Login)}: {ex.Message}");
+                _logServico.EnviarLog($"Erro em {nameof(AuthController)}, função {nameof(Login)}: {ex.Message}");
                 return StatusCode(500, "Ocorreu um erro, tente novamente mais tarde!");
             }
         }
