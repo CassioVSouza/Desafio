@@ -13,14 +13,12 @@ namespace Frontend.Servicos.Principal
         private readonly ILogServico _logServico;
         private readonly HttpClient _httpClient;
         private readonly IJSRuntime _JS;
-        private readonly CustomAuthStateProvider _customAuthStateProvider;
 
-        public LoginServico(ILogServico log, IHttpClientFactory client, IJSRuntime contextAccessor, CustomAuthStateProvider customAuthStateProvider)
+        public LoginServico(ILogServico log, IHttpClientFactory client, IJSRuntime contextAccessor)
         {
             _logServico = log;
             _httpClient = client.CreateClient("ApiClient"); //Pega a URL base da API Backend, o caminho pode ser mudado no program.cs
             _JS = contextAccessor;
-            _customAuthStateProvider = customAuthStateProvider;
         }
 
         public async Task<ERespostaAPI> FazerLoginAsync(LoginModel login)
@@ -36,7 +34,6 @@ namespace Frontend.Servicos.Principal
                     if (conteudo != null)
                     {
                         await _JS.InvokeVoidAsync("localStorage.setItem", "authToken", conteudo.token);
-                        _customAuthStateProvider.NotificarAutenticacao(conteudo.token);
                         return ERespostaAPI.Ok; ;
                     }
                     return ERespostaAPI.ErroServidor;

@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿@layout EmptyLayout
+@page "/"
 @using Frontend.Servicos.Principal
 @inject ILoginServico loginServico
 @inject NavigationManager Navigation
@@ -36,6 +37,7 @@
 @code {
     public LoginModel login { get; set; } = new();
     public string? mensagemErro { get; set; }
+
 
     private async Task FazerLoginAsync()
     {
