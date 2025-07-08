@@ -136,7 +136,7 @@ namespace Backend.Servicos.Principal
 
                 return new Amostra()
                 {
-                    Codigo = amostra.Codigo,
+                    Codigo = Guid.NewGuid().ToString(),
                     DataRecebimento = amostra.DataRecebimento,
                     Descricao = amostra.Descricao,
                     Status = amostra.Status,

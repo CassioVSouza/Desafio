@@ -4,9 +4,6 @@ namespace Backend.DTOs
 {
     public class AmostraDTO
     {
-        [StringLength(420)]
-        [Required]
-        public string Codigo { get; set; } = Guid.NewGuid().ToString();
         [StringLength(100)]
         [Required]
         public string Descricao { get; set; } = null!;
@@ -19,7 +16,6 @@ namespace Backend.DTOs
 
         public void LimparPossiveisEspacosBrancos()
         {
-            Codigo = Codigo.Trim();
             Descricao = Descricao.Trim();
             Status = Status.Trim();
         }
