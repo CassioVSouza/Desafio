@@ -36,3 +36,6 @@ frontend fica em http://localhost:5000/
 backend fica em http://localhost:5001/swagger
 
 para verificar a aplicação na azure acesse: https://frontend20250709120804-e4g4ggfmg4hna6aq.canadacentral-01.azurewebsites.net/
+
+Usuario: Usuario
+Senha: SenhaTeste123$
