@@ -4,7 +4,7 @@ O projeto contém chaves e strings de conexão nos arquivos para ser mais fácil
 
 Para rodar o banco de dados será o seguinte:
 
-A aplicação utiliza o LocalDB do SQLServer, você precisa liberá a porta 1433 (Geralmente já é o padrão)
+A aplicação utiliza o LocalDB do SQLServer, você precisa liberar a porta 1433 (Geralmente já é o padrão)
 
 Verifique se o serviço "SQL Server Browser" está ativo.
 Habilite TCP/IP no SQL Server Configuration Manager:
