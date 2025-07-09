@@ -22,15 +22,25 @@ builder.Services.AddScoped<ILoginServico, LoginServico>();
 builder.Services.AddScoped<IAmostraServico, AmostraServico>();
 builder.Services.AddScoped<AvisoErro>();
 
-builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo("/keys")) 
-    .SetApplicationName("FrontEndKeys");
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "keys")))
+        .SetApplicationName("FrontEndKeys");
+}
+else
+{
+    // In Azure App Service, use the default storage location that the app has access to
+    builder.Services.AddDataProtection()
+        .SetApplicationName("FrontEndKeys");
+}
 
-builder.WebHost.UseUrls("http://0.0.0.0:80"); //Utilizar essa linha para rodar a aplicação no docker
+
+//builder.WebHost.UseUrls("http://0.0.0.0:80"); //Utilizar essa linha para rodar a aplicação no docker
 
 builder.Services.AddHttpClient("ApiClient", client =>
 {
-    client.BaseAddress = new Uri("http://backend:80"); 
+    client.BaseAddress = new Uri("https://backend20250709123230-aqcqetbkeeh8f8cp.canadacentral-01.azurewebsites.net"); 
 }); 
 
 var app = builder.Build();

@@ -13,7 +13,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("http://0.0.0.0:80"); //Utilize essa URL para ser possível utilizar o localhost do docker, comente essa linha para rodar localmente sem docker
+//builder.WebHost.UseUrls("http://0.0.0.0:80"); //Utilize essa URL para ser possível utilizar o localhost do docker, comente essa linha para rodar localmente sem docker
 
 builder.Services.AddScoped<ILogServico, LogServico>();
 builder.Services.AddScoped<IAmostraRepositorio, AmostraRepositorio>();

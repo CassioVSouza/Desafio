@@ -28,7 +28,7 @@ namespace Backend.Controllers
             try
             {
                 string usuario = "Usuario"; //dados do usuario hardcodado para simplificar os testes
-                string senha = "HpmdXS+KAoYK/zo/od4AIg=="; // senha criptografada usando PBKDF2
+                string senha = "SenhaTeste123!";
 
                 var respostaUsuarioNaoEncontrado = await _authServico.UsuarioNaoExisteAsync(usuario);
 
