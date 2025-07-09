@@ -144,7 +144,7 @@ namespace Backend.Servicos.Principal
 
                 if (isEdicao)
                 {
-                    amostraEntity.Codigo = amostra.Codigo;
+                    amostraEntity.Codigo = amostra.Codigo!;
                 }
                 else
                 {
