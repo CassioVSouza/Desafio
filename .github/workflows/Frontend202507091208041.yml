@@ -1,15 +1,14 @@
-name: Build and deploy .NET Core application to Web App Backend20250709123230
+name: Build and deploy .NET Core application to Web App Frontend20250709120804
 on:
   push:
     branches:
     - Release/Azure
 env:
-  AZURE_WEBAPP_NAME: Backend20250709123230
-  AZURE_WEBAPP_PACKAGE_PATH: .\publish
+  AZURE_WEBAPP_NAME: Frontend20250709120804
+  AZURE_WEBAPP_PACKAGE_PATH: .\published
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 9.0.x
-  WORKING_DIRECTORY: .\Backend\Backend.csproj 
-
+  WORKING_DIRECTORY: .\Frontend\Frontend.csproj 
 jobs:
   build:
     runs-on: windows-latest
@@ -44,7 +43,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v2
       with:
-        creds: ${{ secrets.Backend20250709123230_SPN }}
+        creds: ${{ secrets.Frontend20250709120804_SPN }}
     - name: Deploy to Azure WebApp
       uses: azure/webapps-deploy@v2
       with:

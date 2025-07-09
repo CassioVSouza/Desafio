@@ -30,7 +30,6 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    // In Azure App Service, use the default storage location that the app has access to
     builder.Services.AddDataProtection()
         .SetApplicationName("FrontEndKeys");
 }
