@@ -3,6 +3,7 @@
 @using Frontend.Servicos.Principal
 @inject ILoginServico loginServico
 @inject NavigationManager Navigation
+@inject AvisoErro avisoErro
 @inject ILogServico logServico
 
 @rendermode InteractiveServer
@@ -13,6 +14,12 @@
 {
     <div>
         @mensagemErro
+    </div>
+}
+@if (avisoErro.erroMensagem != null)
+{
+    <div>
+        @avisoErro.erroMensagem
     </div>
 }
 
@@ -36,6 +43,7 @@
 
 @code {
     public LoginModel login { get; set; } = new();
+
     public string? mensagemErro { get; set; }
 
 
@@ -48,7 +56,7 @@
 
             if (resposta == ERespostaAPI.Ok)
             {
-                Navigation.NavigateTo("/counter");
+                Navigation.NavigateTo("/Amostras");
                 return;
             }
 

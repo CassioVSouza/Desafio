@@ -28,7 +28,7 @@ namespace Backend.Controllers
         {
             try
             {
-                var amostraFiltrada = _amostraServico.ValidarInformacoes(amostra);
+                var amostraFiltrada = _amostraServico.ValidarInformacoes(amostra, false);
 
                 if (amostraFiltrada == null)
                     return BadRequest(new ErroAPIDTO()
@@ -57,7 +57,7 @@ namespace Backend.Controllers
         {
             try
             {
-                var amostraFiltrada = _amostraServico.ValidarInformacoes(amostra);
+                var amostraFiltrada = _amostraServico.ValidarInformacoes(amostra, true);
 
                 if (amostraFiltrada == null)
                     return BadRequest(new ErroAPIDTO()
@@ -82,7 +82,7 @@ namespace Backend.Controllers
 
         [HttpDelete]
         [Route("/DeletarAmostra")]
-        public async Task<IActionResult> DeletarAmostra([FromBody] string codigo)
+        public async Task<IActionResult> DeletarAmostra([FromQuery] string codigo)
         {
             try
             {

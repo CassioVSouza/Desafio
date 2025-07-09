@@ -2,6 +2,7 @@
 using Frontend.Enums;
 using Frontend.Models;
 using Frontend.Servicos.Interfaces;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.JSInterop;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,13 +13,13 @@ namespace Frontend.Servicos.Principal
     {
         private readonly ILogServico _logServico;
         private readonly HttpClient _httpClient;
-        private readonly IJSRuntime _JS;
+        private readonly ProtectedSessionStorage _session;
 
-        public LoginServico(ILogServico log, IHttpClientFactory client, IJSRuntime contextAccessor)
+        public LoginServico(ILogServico log, IHttpClientFactory client, ProtectedSessionStorage httpContextAccessor)
         {
             _logServico = log;
             _httpClient = client.CreateClient("ApiClient"); //Pega a URL base da API Backend, o caminho pode ser mudado no program.cs
-            _JS = contextAccessor;
+            _session = httpContextAccessor;
         }
 
         public async Task<ERespostaAPI> FazerLoginAsync(LoginModel login)
@@ -33,8 +34,8 @@ namespace Frontend.Servicos.Principal
 
                     if (conteudo != null)
                     {
-                        await _JS.InvokeVoidAsync("localStorage.setItem", "authToken", conteudo.token);
-                        return ERespostaAPI.Ok; ;
+                        await _session.SetAsync("authToken", conteudo.token);
+                        return ERespostaAPI.Ok;
                     }
                     return ERespostaAPI.ErroServidor;
                 }

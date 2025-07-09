@@ -11,6 +11,6 @@ namespace Backend.Servicos.Interfaces
         Task<Amostra?> ConsultarAmostraPorCodigoAsync(string codigo);
         Task<List<Amostra>> ConsultarAmostrasAsync();
         Task<List<Amostra>> ConsultarAmostrasFiltradasAsync(DateTime? date, string? status);
-        Amostra? ValidarInformacoes(AmostraDTO amostra);
+        Amostra? ValidarInformacoes(AmostraDTO amostra, bool isEdicao);
     }
 }

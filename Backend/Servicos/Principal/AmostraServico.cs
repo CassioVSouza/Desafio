@@ -121,7 +121,7 @@ namespace Backend.Servicos.Principal
         }
 
 
-        public Amostra? ValidarInformacoes(AmostraDTO amostra)
+        public Amostra? ValidarInformacoes(AmostraDTO amostra, bool isEdicao)
         {
             try
             {
@@ -134,13 +134,23 @@ namespace Backend.Servicos.Principal
                 if (!valido)
                     return null!;
 
-                return new Amostra()
+                var amostraEntity = new Amostra()
                 {
-                    Codigo = amostra.Codigo,
                     DataRecebimento = amostra.DataRecebimento,
                     Descricao = amostra.Descricao,
                     Status = amostra.Status,
                 };
+
+                if (isEdicao)
+                {
+                    amostraEntity.Codigo = amostra.Codigo;
+                }
+                else
+                {
+                    amostraEntity.Codigo = Guid.NewGuid().ToString();
+                }
+
+                    return amostraEntity;
             }
             catch (Exception ex)
             {

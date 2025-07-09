@@ -1,0 +1,179 @@
+﻿@page "/EditarAmostra/{codigo}"
+
+@inject NavigationManager Navigation
+@inject IValidacaoServico validacaoServico
+@inject ILogServico logServico
+@inject IAmostraServico amostraServico
+@inject AvisoErro avisoErro
+@rendermode InteractiveServer
+
+<PageTitle>Adicionar Amostra</PageTitle>
+
+
+@if (erroMensagem != null)
+{
+    <div>
+        @erroMensagem
+    </div>
+}
+<section>
+    <div class="cointainer_amostra">
+        <EditForm Model="@amostra" OnValidSubmit="SalvarAmostra">
+            <DataAnnotationsValidator />
+            <div class="container_amostra_form">
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <InputText @bind-Value="amostra.Descricao"></InputText>
+                    <ValidationMessage For="(() => amostra.Descricao)"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>Data de Recebimento</label>
+                    <InputDate @bind-Value="amostra.DataRecebimento"></InputDate>
+                    <ValidationMessage For="(() => amostra.DataRecebimento)"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <InputSelect @bind-Value="amostra.Status">
+                        <option>Escolha o Status da Amosta</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Em Analise">Em Análise</option>
+                        <option value="Finalizada">Finalizada</option>
+                    </InputSelect>
+                    <ValidationMessage For="(() => amostra.Status)"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-group btn-success" type="submit">Salvar</button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</section>
+
+@code {
+    private Amostra amostra { get; set; } = new();
+
+    private string erroMensagem = null!;
+
+    [Parameter]
+    public string codigo { get; set; } = null!;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            if (firstRender)
+            {
+                var validado = await ValidarUsuario();
+
+                if (!validado)
+                {
+                    Navigation.NavigateTo("/");
+                    return;
+                }
+
+
+                var resposta = await amostraServico.ConsultarAmostraPorCodigoAsync(codigo);
+
+                if (resposta.respostaErro == null && resposta.amostra != null)
+                {
+                    amostra = resposta.amostra;
+                    if (firstRender)
+                    {
+                        StateHasChanged();
+                    }
+                    return;
+                }
+
+                EnviarMensagemDeErro((ERespostaAPI)resposta.respostaErro!);
+
+                Navigation.NavigateTo("/Amostras");
+                return;
+          
+            }
+
+        }
+        catch (Exception ex)
+        {
+            logServico.EnviarLog($"Erro na pagina {nameof(AdicionarAmostra)}, função {nameof(OnAfterRenderAsync)}: {ex.Message}");
+            Navigation.NavigateTo("/");
+            return;
+        }
+    }
+
+    private void EnviarMensagemDeErro(ERespostaAPI resposta)
+    {
+        switch (resposta)
+        {
+            case ERespostaAPI.NaoEncontrado:
+                avisoErro.erroMensagem = "Não foi possível encontrar a amostra selecionada!";
+                break;
+            case ERespostaAPI.ErroServidor:
+                avisoErro.erroMensagem = "Ocorreu um erro, tente novamente mais tarde!";
+                break;
+            default:
+                avisoErro.erroMensagem = "Ocorreu um erro, tente novamente mais tarde!";
+                break;
+        }
+    }
+
+    private async Task<bool> ValidarUsuario()
+    {
+        try
+        {
+            var validado = await validacaoServico.ValidarTokenDeAcessoAsync();
+
+            if (validado)
+                return true;
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            logServico.EnviarLog($"Erro na pagina {nameof(EditarAmostra)}, função {nameof(OnAfterRenderAsync)}: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task SalvarAmostra()
+    {
+        try
+        {
+            StateHasChanged();
+            erroMensagem = null!;
+
+            var resposta = amostraServico.ValidarAmostra(amostra);
+
+            if (!resposta)
+            {
+                erroMensagem = "Os campos não foram preenchidos corretamente, verifique novamente!";
+                return;
+            }
+
+            var respostaAPI = await amostraServico.EditarAmostraAsync(amostra);
+
+            if (respostaAPI == ERespostaAPI.Ok)
+            {
+                Navigation.NavigateTo("/Amostras");
+                return;
+            }
+
+            switch (respostaAPI)
+            {
+                case ERespostaAPI.InfosInvalidas:
+                    erroMensagem = "Os campos não foram preenchidos corretamente, verifique e tente novamente!";
+                    break;
+                default:
+                    erroMensagem = "Ocorreu um erro ao tentar editar a amostra, tente novamente!";
+                    break;
+            }
+            return;
+        }
+        catch (Exception ex)
+        {
+            logServico.EnviarLog($"Erro na pagina {nameof(AdicionarAmostra)}, função {nameof(SalvarAmostra)}: {ex.Message}");
+            Navigation.NavigateTo("/Amostras");
+            return;
+        }
+    }
+}

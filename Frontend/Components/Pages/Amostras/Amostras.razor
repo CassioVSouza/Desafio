@@ -1,0 +1,132 @@
+﻿@page "/Amostras"
+
+@inject NavigationManager Navigation
+@inject IValidacaoServico validacaoServico
+@inject ILogServico logServico
+@inject IAmostraServico amostraServico
+@inject AvisoErro avisoErro
+@rendermode InteractiveServer
+
+<section>
+    @if(avisoErro.erroMensagem != null)
+    {
+        <div>@avisoErro.erroMensagem</div>
+    }
+    <div class="container_amostras">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Código</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col">Data De Recebimento</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(amostras != null)
+                {
+                    @foreach (var amostra in amostras)
+                    {
+                        <tr>
+                            <th scope="row">@amostra.Codigo</th>
+                            <td>@amostra.Descricao</td>
+                            <td>@amostra.DataRecebimento.ToString("G")</td>
+                            <td>@amostra.Status</td>
+                            <td><button @onclick="(() => EnviarParaPaginaDeEdicao(amostra.Codigo!))">Editar</button>
+                                <button @onclick="(() => RemoverAmostraAsync(amostra.Codigo!))">Deletar</button></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@code {
+    private List<Amostra>? amostras { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool isFirstRender)
+    {
+        try
+        {
+            if (isFirstRender)
+            {
+                var validado = await ValidarUsuario();
+
+                if (!validado)
+                {
+
+                    Navigation.NavigateTo("/");
+                    return;
+                }
+
+                amostras = await amostraServico.ConsultarAmostrasAsync()!; //Conteudo está sendo carregado após renderização para ser possível resgatar o token de autorizacao no protected storage que usa JS
+
+                if (amostras != null)
+                {
+                    StateHasChanged();
+                    return;
+                }
+
+                avisoErro.erroMensagem = "Ocorreu um erro ao tentar listar as amostras, tente novamente!";
+                Navigation.NavigateTo("/");
+                return;
+            
+            }
+        }
+        catch (Exception ex)
+        {
+            logServico.EnviarLog($"Erro na pagina {nameof(Amostras)}, função {nameof(OnAfterRenderAsync)}: {ex.Message}");
+            Navigation.NavigateTo("/");
+            return;
+        }
+    }
+
+    private async Task RemoverAmostraAsync(string codigo)
+    {
+        try
+        {
+            var resposta = await amostraServico.RemoverAmostraAsync(codigo);
+
+            if (resposta)
+            {
+                Navigation.NavigateTo("/Amostras");
+                return;
+            }
+
+            avisoErro.erroMensagem = "Não foi possível remover essa amostra no momento, tente novamente mais tarde!";
+            return;
+        }
+        catch (Exception ex)
+        {
+            logServico.EnviarLog($"Erro na pagina {nameof(Amostras)}, função {nameof(RemoverAmostraAsync)}: {ex.Message}");
+            Navigation.NavigateTo("/");
+            return;
+        }
+    }
+
+    private async Task<bool> ValidarUsuario()
+    {
+        try
+        {
+            var validado = await validacaoServico.ValidarTokenDeAcessoAsync();
+
+            if (validado)
+                return true;
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            logServico.EnviarLog($"Erro na pagina {nameof(Amostras)}, função {nameof(OnAfterRenderAsync)}: {ex.Message}");
+            return false;
+        }
+    }
+
+    private void EnviarParaPaginaDeEdicao(string codigo)
+    {
+        Navigation.NavigateTo($"/EditarAmostra/{codigo}");
+        return;
+    }
+}
