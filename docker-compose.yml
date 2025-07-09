@@ -5,6 +5,8 @@ services:
       context: ./Frontend
     ports:
       - "5000:80"
+    volumes:
+      - ./keys:/keys
 
   backend:
     build:

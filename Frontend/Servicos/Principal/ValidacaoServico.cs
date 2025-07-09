@@ -1,5 +1,6 @@
 ﻿using Frontend.Enums;
 using Frontend.Servicos.Interfaces;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.JSInterop;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
@@ -8,12 +9,12 @@ namespace Frontend.Servicos.Principal
 {
     public class ValidacaoServico : IValidacaoServico
     {
-        private readonly IJSRuntime _JS;
+        private readonly ProtectedSessionStorage _protectedSession;
         private readonly ILogServico _logServico;
 
-        public ValidacaoServico(IJSRuntime jSRuntime, ILogServico logServico)
+        public ValidacaoServico(ProtectedSessionStorage protectedSession, ILogServico logServico)
         {
-            _JS = jSRuntime;
+            _protectedSession = protectedSession;
             _logServico = logServico;
         }
 
@@ -21,11 +22,10 @@ namespace Frontend.Servicos.Principal
         {
             try
             {
-                var token = await _JS.InvokeAsync<string>("localStorage.getItem", "authToken");
-
+                var token = await _protectedSession.GetAsync<string>("authToken");
                 var handler = new JwtSecurityTokenHandler();
 
-                var jwtToken = handler.ReadJwtToken(token);
+                var jwtToken = handler.ReadJwtToken(token.Value);
                 var expClaim = jwtToken.Payload.Expiration;
 
                 if (expClaim == null)
