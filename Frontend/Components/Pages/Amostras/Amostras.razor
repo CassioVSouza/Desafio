@@ -1,18 +1,53 @@
 ﻿@page "/Amostras"
+@using System.Globalization
 
 @inject NavigationManager Navigation
 @inject IValidacaoServico validacaoServico
 @inject ILogServico logServico
 @inject IAmostraServico amostraServico
 @inject AvisoErro avisoErro
+@inject IJSRuntime jSRuntime
 @rendermode InteractiveServer
 
 <section>
     @if(avisoErro.erroMensagem != null)
     {
-        <div>@avisoErro.erroMensagem</div>
+        <div class="avisoErro">@avisoErro.erroMensagem</div>
     }
     <div class="container_amostras">
+        <div class="filtros">
+            <div>
+                <label>Data</label>
+                <InputDate class="form-control" @bind-Value="filtro.Data"></InputDate>
+            </div>
+            <div>
+                <label>Status</label>
+                <InputSelect class="form-select" @bind-Value="filtro.Status">
+                    <option value="">Escolha o Status da Amostra</option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Em Analise">Em Análise</option>
+                    <option value="Finalizada">Finalizada</option>
+                </InputSelect>
+            </div>
+            <div>
+                <button class="btn btn-group btn-primary" @onclick="CarregarAmostrasFiltradas">Filtrar</button>
+            </div>
+            <div>
+                <button class="btn btn-group btn-primary" @onclick="LimparFiltros">Limpar Filtros</button>
+            </div>
+        </div>
+
+        <div class="MostrarInfos">
+            @if (filtro.Data != null)
+            {
+                <span>Amostras do dia @filtro.Data.Value.ToString("D", new CultureInfo("pt-BR"))</span>
+            }
+            @if (filtro.Status != null)
+            {
+                <span>Amostras filtradas pelo Status de @filtro.Status</span>
+            }
+        </div>
+
         <table class="table">
             <thead>
                 <tr>
@@ -20,31 +55,36 @@
                     <th scope="col">Descrição</th>
                     <th scope="col">Data De Recebimento</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Ações</th>
+                    <th class="Acao" scope="col">Ações</th>
                 </tr>
             </thead>
             <tbody>
-                @if(amostras != null)
+                @if(amostrasTela != null)
                 {
-                    @foreach (var amostra in amostras)
+                    @foreach (var amostra in amostrasTela)
                     {
                         <tr>
                             <th scope="row">@amostra.Codigo</th>
                             <td>@amostra.Descricao</td>
-                            <td>@amostra.DataRecebimento.ToString("G")</td>
+                            <td>@amostra.DataRecebimento.ToString("G", new CultureInfo("pt-BR"))</td>
                             <td>@amostra.Status</td>
-                            <td><button @onclick="(() => EnviarParaPaginaDeEdicao(amostra.Codigo!))">Editar</button>
-                                <button @onclick="(() => RemoverAmostraAsync(amostra.Codigo!))">Deletar</button></td>
+                            <td class="Acao"><button class="btn btn-group btn-primary" @onclick="(() => EnviarParaPaginaDeEdicao(amostra.Codigo!))">Editar</button>
+                                <button class="btn btn-group btn-danger" @onclick="(() => RemoverAmostraAsync(amostra.Codigo!))">Deletar</button></td>
                         </tr>
                     }
                 }
             </tbody>
         </table>
+        @if(amostrasTela != null && amostrasTela.Count > 0)
+        {
+            <button class="btn btn-group btn-primary botao" @onclick="Imprimir">Imprimir</button>
+        }
     </div>
 </section>
 
 @code {
-    private List<Amostra>? amostras { get; set; }
+    private List<Amostra>? amostrasTela { get; set; }
+    private Filtro filtro { get; set; } = new();
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
     {
@@ -61,18 +101,15 @@
                     return;
                 }
 
-                amostras = await amostraServico.ConsultarAmostrasAsync()!; //Conteudo está sendo carregado após renderização para ser possível resgatar o token de autorizacao no protected storage que usa JS
+                var carregou = await CarregarAmostras();
 
-                if (amostras != null)
-                {
-                    StateHasChanged();
+                if (carregou)
                     return;
-                }
 
                 avisoErro.erroMensagem = "Ocorreu um erro ao tentar listar as amostras, tente novamente!";
                 Navigation.NavigateTo("/");
                 return;
-            
+
             }
         }
         catch (Exception ex)
@@ -83,6 +120,71 @@
         }
     }
 
+    private async Task<bool> CarregarAmostras()
+    {
+        try
+        {
+            amostrasTela = await amostraServico.ConsultarAmostrasAsync()!; //Conteudo está sendo carregado após renderização para ser possível resgatar o token de autorizacao no protected storage que usa JS
+
+            if (amostrasTela != null)
+            {
+                StateHasChanged();
+                return true;
+            }
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            logServico.EnviarLog($"Erro na pagina {nameof(Amostras)}, função {nameof(CarregarAmostras)}: {ex.Message}");
+            Navigation.NavigateTo("/");
+            return false;
+        }
+    }
+
+    private async Task CarregarAmostrasFiltradas()
+    {
+        try
+        {
+            avisoErro.erroMensagem = null;
+            if (filtro.Status == null && filtro.Data == null)
+            {
+                avisoErro.erroMensagem = "Utilize pelo menos 1 filtro!";
+                return;
+            }
+
+            var amostrasFiltradas = await amostraServico.ConsultarAmostrasFiltradasAsync(filtro);
+
+            if (amostrasFiltradas != null)
+            {
+
+                amostrasTela = amostrasFiltradas;
+                return;
+            }
+
+            avisoErro.erroMensagem = "Não foi possível carregar as amostras filtradas, tente novamente!";
+            return;
+        }
+        catch (Exception ex)
+        {
+            logServico.EnviarLog($"Erro na pagina {nameof(Amostras)}, função {nameof(CarregarAmostrasFiltradas)}: {ex.Message}");
+            Navigation.NavigateTo("/");
+            return;
+        }
+    }
+
+    private async Task Imprimir()
+    {
+        await jSRuntime.InvokeVoidAsync("printPage");
+    }
+
+    private async Task LimparFiltros()
+    {
+        await CarregarAmostras();
+        filtro.Data = null;
+        filtro.Status = null;
+    }
+
     private async Task RemoverAmostraAsync(string codigo)
     {
         try
@@ -91,11 +193,12 @@
 
             if (resposta)
             {
-                Navigation.NavigateTo("/Amostras");
+                await CarregarAmostras();
                 return;
             }
 
             avisoErro.erroMensagem = "Não foi possível remover essa amostra no momento, tente novamente mais tarde!";
+            StateHasChanged();
             return;
         }
         catch (Exception ex)

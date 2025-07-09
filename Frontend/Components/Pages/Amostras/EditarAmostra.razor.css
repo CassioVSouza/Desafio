@@ -1,0 +1,5 @@
+﻿.container_amostra_form {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}

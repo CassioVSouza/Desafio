@@ -1,0 +1,25 @@
+﻿.filtros{
+    display: flex;
+    gap: 10px;
+}
+
+.filtros > div{
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+.MostrarInfos{
+    display: none;
+}
+
+@media print{
+    .filtros, .Acao, .botao, .avisoErro {
+        display: none;
+    }
+    .MostrarInfos{
+        display: flex;
+        flex-direction: column;
+    }
+}

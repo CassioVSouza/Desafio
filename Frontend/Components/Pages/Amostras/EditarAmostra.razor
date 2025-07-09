@@ -23,17 +23,17 @@
             <div class="container_amostra_form">
                 <div class="form-group">
                     <label>Descrição</label>
-                    <InputText @bind-Value="amostra.Descricao"></InputText>
+                    <InputText class="form-control" @bind-Value="amostra.Descricao"></InputText>
                     <ValidationMessage For="(() => amostra.Descricao)"></ValidationMessage>
                 </div>
                 <div class="form-group">
                     <label>Data de Recebimento</label>
-                    <InputDate @bind-Value="amostra.DataRecebimento"></InputDate>
+                    <InputDate class="form-control" @bind-Value="amostra.DataRecebimento"></InputDate>
                     <ValidationMessage For="(() => amostra.DataRecebimento)"></ValidationMessage>
                 </div>
                 <div class="form-group">
                     <label>Status</label>
-                    <InputSelect @bind-Value="amostra.Status">
+                    <InputSelect class="form-select" @bind-Value="amostra.Status">
                         <option>Escolha o Status da Amosta</option>
                         <option value="Pendente">Pendente</option>
                         <option value="Em Analise">Em Análise</option>

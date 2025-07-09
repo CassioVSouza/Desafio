@@ -62,6 +62,36 @@ namespace Frontend.Servicos.Principal
                 return false;
             }
         }
+
+        public async Task<List<Amostra>?> ConsultarAmostrasFiltradasAsync(Filtro filtro)
+        {
+            try
+            {
+                var token = await _session.GetAsync<string>("authToken");
+
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token.Value);
+
+                var resposta = await _httpClient.PostAsJsonAsync("/ConsultarAmostrasFiltradas", filtro);
+
+                if (resposta.IsSuccessStatusCode)
+                {
+                    var amostras = await resposta.Content.ReadFromJsonAsync<List<Amostra>>();
+
+                    if (amostras != null)
+                        return amostras;
+
+                    return null;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logServico.EnviarLog($"Erro em {nameof(AmostraServico)}, função {nameof(ConsultarAmostrasFiltradasAsync)}: {ex.Message}");
+                return null;
+            }
+        }
+
         public async Task<bool> AdicionarAmostraAsync(Amostra amostra)
         {
             try

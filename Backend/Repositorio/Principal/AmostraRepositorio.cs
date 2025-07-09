@@ -148,6 +148,11 @@ namespace Backend.Repositorio.Principal
                     amostras = await _sqlContext.Amostras.Where(o => o.DataRecebimento.Date == data.Value.Date).ToListAsync();
                 }
 
+                if(data != null && status != null)
+                {
+                    amostras = await _sqlContext.Amostras.Where(o => o.DataRecebimento.Date == data.Value.Date && o.Status == status).ToListAsync();
+                }
+
                 if(amostras == null)
                     amostras = new List<Amostra>();
 

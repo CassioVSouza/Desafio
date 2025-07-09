@@ -109,6 +109,7 @@ namespace Backend.Servicos.Principal
         {
             try
             {
+                status = string.IsNullOrEmpty(status) ? null : status;
                 var amostras = await _amostraRepo.ConsultarAmostrasFiltradasAsync(date, status);
 
                 return amostras;

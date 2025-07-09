@@ -46,6 +46,12 @@ main {
     }
 }
 
+@media print {
+    .sidebar, .About {
+        display: none;
+    }
+}
+
 @media (min-width: 641px) {
     .page {
         flex-direction: row;

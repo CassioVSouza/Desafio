@@ -11,5 +11,6 @@ namespace Frontend.Servicos.Interfaces
         Task<(ERespostaAPI? respostaErro, Amostra? amostra)> ConsultarAmostraPorCodigoAsync(string codigo);
         Task<ERespostaAPI> EditarAmostraAsync(Amostra amostra);
         Task<bool> RemoverAmostraAsync(string codigo);
+        Task<List<Amostra>?> ConsultarAmostrasFiltradasAsync(Filtro filtro);
     }
 }

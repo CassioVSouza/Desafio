@@ -23,23 +23,27 @@
     </div>
 }
 
-<EditForm Model="@login" OnValidSubmit="FazerLoginAsync" >
-    <DataAnnotationsValidator/>
+<section class="container_login">
+    <EditForm Model="@login" OnValidSubmit="FazerLoginAsync" style="width: 100%; display: flex; justify-content: center">
+        <div class="container_login_form">
+            <DataAnnotationsValidator />
 
-    <div class="form-group">
-        <label class="form-label" id="Usuario">Usuário</label>
-        <InputText class="form-control" @bind-Value="login.user" type="text"/>
-        <ValidationMessage For="@(() => login.user)"/>
-    </div>
-    <div class="form-group">
-        <label class="form-label" id="Usuario">Senha</label>
-        <InputText class="form-control" @bind-Value="login.senha" type="text" />
-        <ValidationMessage For="@(() => login.senha)" />
-    </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-group btn-success">Entrar</button>
-    </div>
-</EditForm>
+            <div class="form-group">
+                <label class="form-label" id="Usuario">Usuário</label>
+                <InputText class="form-control" @bind-Value="login.user" type="text" />
+                <ValidationMessage For="@(() => login.user)" />
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="Usuario">Senha</label>
+                <InputText class="form-control" @bind-Value="login.senha" type="text" />
+                <ValidationMessage For="@(() => login.senha)" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-group btn-success">Entrar</button>
+            </div>
+        </div>
+    </EditForm>
+</section>
 
 @code {
     public LoginModel login { get; set; } = new();
